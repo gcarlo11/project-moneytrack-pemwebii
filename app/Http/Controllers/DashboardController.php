@@ -27,16 +27,44 @@ class DashboardController extends Controller
         ->whereDate('transaction_date', $today)
         ->sum('amount');
         
-        // Last 7 days transactions for weekly view
+        // Last 7 days - create a full array of all 7 days
         $startOfWeek = Carbon::today()->subDays(6);
-        $weeklyTransactions = Transaction::with('category')
+        $endOfWeek = Carbon::today();
+        
+        // Initialize weekly data array with all dates in the week
+        $weeklyData = [];
+        $current = clone $startOfWeek;
+        
+        while ($current <= $endOfWeek) {
+            $formattedDate = $current->format('Y-m-d');
+            $weeklyData[$formattedDate] = [
+                'date' => $current->format('d M'),
+                'income' => 0,
+                'expense' => 0
+            ];
+            $current->addDay();
+        }
+        
+        // Get transactions for the last 7 days
+        $transactions = Transaction::with('category')
             ->whereDate('transaction_date', '>=', $startOfWeek)
             ->whereDate('transaction_date', '<=', $today)
-            ->orderBy('transaction_date', 'desc')
-            ->get()
-            ->groupBy(function ($transaction) {
-                return $transaction->transaction_date->format('Y-m-d');
-            });
+            ->get();
+            
+        // Fill in the weekly data with actual transactions
+        foreach ($transactions as $transaction) {
+            $date = $transaction->transaction_date->format('Y-m-d');
+            if ($transaction->category->type === 'income') {
+                $weeklyData[$date]['income'] += $transaction->amount;
+            } else {
+                $weeklyData[$date]['expense'] += $transaction->amount;
+            }
+        }
+        
+        // For compatibility with existing code, still get the grouped transactions
+        $weeklyTransactions = $transactions->groupBy(function ($transaction) {
+            return $transaction->transaction_date->format('Y-m-d');
+        });
             
         // Calculate weekly totals
         $weeklyIncome = Transaction::whereHas('category', function($query) {
@@ -83,6 +111,7 @@ class DashboardController extends Controller
             'monthlyIncome', 
             'monthlyExpense',
             'weeklyTransactions',
+            'weeklyData',
             'recentTransactions'
         ));
     }

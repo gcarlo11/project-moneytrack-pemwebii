@@ -14,21 +14,21 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Today</h5>
+                    <h6 class="card-title">Today</h6>
                     <div class="d-flex justify-content-between">
                         <div>
                             <p class="mb-0">Income</p>
-                            <h3 class="text-success">Rp{{ number_format($dailyIncome, 0, ',', '.') }}</h3>
+                            <h6 class="text-success">Rp{{ number_format($dailyIncome, 0, ',', '.') }}</h6>
                         </div>
                         <div>
                             <p class="mb-0">Expense</p>
-                            <h3 class="text-danger">Rp{{ number_format($dailyExpense, 0, ',', '.') }}</h3>
+                            <h6 class="text-danger">Rp{{ number_format($dailyExpense, 0, ',', '.') }}</h6>
                         </div>
                         <div>
                             <p class="mb-0">Balance</p>
-                            <h3 class="{{ $dailyIncome - $dailyExpense >= 0 ? 'text-success' : 'text-danger' }}">
+                            <h6 class="{{ $dailyIncome - $dailyExpense >= 0 ? 'text-success' : 'text-danger' }}">
                                 Rp{{ number_format($dailyIncome - $dailyExpense, 0, ',', '.') }}
-                            </h3>
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -38,21 +38,21 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">This Week</h5>
+                    <h6 class="card-title">This Week</h6>
                     <div class="d-flex justify-content-between">
                         <div>
                             <p class="mb-0">Income</p>
-                            <h3 class="text-success">Rp{{ number_format($weeklyIncome, 0, ',', '.') }}</h3>
+                            <h6 class="text-success">Rp{{ number_format($weeklyIncome, 0, ',', '.') }}</h6>
                         </div>
                         <div>
                             <p class="mb-0">Expense</p>
-                            <h3 class="text-danger">Rp{{ number_format($weeklyExpense, 0, ',', '.') }}</h3>
+                            <h6 class="text-danger">Rp{{ number_format($weeklyExpense, 0, ',', '.') }}</h6>
                         </div>
                         <div>
                             <p class="mb-0">Balance</p>
-                            <h3 class="{{ $weeklyIncome - $weeklyExpense >= 0 ? 'text-success' : 'text-danger' }}">
+                            <h6 class="{{ $weeklyIncome - $weeklyExpense >= 0 ? 'text-success' : 'text-danger' }}">
                                 Rp{{ number_format($weeklyIncome - $weeklyExpense, 0, ',', '.') }}
-                            </h3>
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -62,21 +62,21 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">This Month</h5>
+                    <h6 class="card-title">This Month</h6>
                     <div class="d-flex justify-content-between">
                         <div>
                             <p class="mb-0">Income</p>
-                            <h3 class="text-success">Rp{{ number_format($monthlyIncome, 0, ',', '.') }}</h3>
+                            <h6 class="text-success">Rp{{ number_format($monthlyIncome, 0, ',', '.') }}</h6>
                         </div>
                         <div>
                             <p class="mb-0">Expense</p>
-                            <h3 class="text-danger">Rp{{ number_format($monthlyExpense, 0, ',', '.') }}</h3>
+                            <h6 class="text-danger">Rp{{ number_format($monthlyExpense, 0, ',', '.') }}</h6>
                         </div>
                         <div>
                             <p class="mb-0">Balance</p>
-                            <h3 class="{{ $monthlyIncome - $monthlyExpense >= 0 ? 'text-success' : 'text-danger' }}">
+                            <h6 class="{{ $monthlyIncome - $monthlyExpense >= 0 ? 'text-success' : 'text-danger' }}">
                                 Rp{{ number_format($monthlyIncome - $monthlyExpense, 0, ',', '.') }}
-                            </h3>
+                            </h6>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Weekly Recap</h5>
+                    <h6 class="mb-0">Weekly Recap</h6>
                 </div>
                 <div class="card-body">
                     <canvas id="weeklyChart" height="300"></canvas>
@@ -99,7 +99,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Recent Transactions</h5>
+                    <h6 class="mb-0">Recent Transactions</h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
@@ -138,22 +138,10 @@
         const incomeData = [];
         const expenseData = [];
         
-        @foreach($weeklyTransactions as $date => $transactions)
-            dates.push('{{ \Carbon\Carbon::parse($date)->format("d M") }}');
-            
-            let dailyIncome = 0;
-            let dailyExpense = 0;
-            
-            @foreach($transactions as $transaction)
-                @if($transaction->category->type == 'income')
-                    dailyIncome += {{ $transaction->amount }};
-                @else
-                    dailyExpense += {{ $transaction->amount }};
-                @endif
-            @endforeach
-            
-            incomeData.push(dailyIncome);
-            expenseData.push(dailyExpense);
+        @foreach($weeklyData as $date => $data)
+            dates.push('{{ $data['date'] }}');
+            incomeData.push({{ $data['income'] }});
+            expenseData.push({{ $data['expense'] }});
         @endforeach
         
         // Create weekly chart

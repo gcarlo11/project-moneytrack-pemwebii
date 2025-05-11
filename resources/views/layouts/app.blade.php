@@ -210,17 +210,6 @@
                         </a>
                     </li>
                 </ul>
-                
-                <div class="position-absolute bottom-0 start-0 w-100 p-3 border-top">
-                    <a href="#" class="nav-link d-flex align-items-center">
-                        <i class="fas fa-user-circle me-2"></i>
-                        <span>My Profile</span>
-                    </a>
-                    <a href="#" class="nav-link d-flex align-items-center">
-                        <i class="fas fa-sign-out-alt me-2"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
             </div>
             
             <!-- Main content -->
